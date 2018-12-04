@@ -10,7 +10,7 @@ namespace AdventOfCode2018
         public static void part1()
         {
             string[] lines = new StreamReader("day2.txt").ReadToEnd().Trim().Split('\n');
-            Dictionary<char, int> counts = new Dictionary<char, int>();
+            int[] counts = new int[26];
 
             int twos = 0;
             int threes = 0;
@@ -20,29 +20,22 @@ namespace AdventOfCode2018
                 string line = lines[i];
                 for(int j = 0; j < line.Length; j++)
                 {
-                    if (counts.ContainsKey(line[j]))
-                        counts[line[j]]++;
-                    else
-                        counts[line[j]] = 1;
+                    counts[line[j] - 97]++;
                 }
 
                 bool hasTwo = false;
                 bool hasThree = false;
-                foreach(var kvp in counts)
+                for(int j = 0; j < counts.Length; j++)
                 {
-                    int val = kvp.Value;
-                    if(val == 2)
-                        hasTwo = true;
-                    else if(val == 3)
-                        hasThree = true;
+                    hasTwo |= counts[j] == 2;
+                    hasThree |= counts[j] == 3;
+                    counts[j] = 0;
                 }
 
                 if (hasTwo)
                     twos++;
                 if (hasThree)
                     threes++;
-
-                counts.Clear();
             }
 
             Console.WriteLine(twos * threes);
@@ -53,7 +46,7 @@ namespace AdventOfCode2018
         public static void part2()
         {
             string[] lines = new StreamReader("day2.txt").ReadToEnd().Trim().Split('\n');
-            Dictionary<char, int> counts = new Dictionary<char, int>();
+            int[] counts = new int[26];
             List<string> myList = new List<string>();
 
             for (int i = 0; i < lines.Length; i++)
@@ -61,20 +54,15 @@ namespace AdventOfCode2018
                 string line = lines[i];
                 for (int j = 0; j < line.Length; j++)
                 {
-                    if (counts.ContainsKey(line[j]))
-                        counts[line[j]]++;
-                    else
-                        counts[line[j]] = 1;
+                    counts[line[j] - 97]++;
                 }
 
-                foreach (var kvp in counts)
+                for(int j = 0; j < counts.Length; j++)
                 {
-                    int val = kvp.Value;
-                    if (val == 2 || val == 3)
+                    if (counts[j] == 2 || counts[j] == 3)
                         myList.Add(line);
+                    counts[j] = 0;
                 }
-
-                counts.Clear();
             }
 
             string line1 = "";

@@ -14,16 +14,7 @@ namespace AdventOfCode2018
 
             for(int i = 0; i < lines.Length; i++)
             {
-                string line = lines[i];
-                switch (line[0])
-                {
-                    case '+':
-                        total += int.Parse(line.Substring(1));
-                        break;
-                    case '-':
-                        total -= int.Parse(line.Substring(1));
-                        break;
-                }
+                total += int.Parse(lines[i]);
             }
 
             Console.WriteLine(total);
@@ -39,16 +30,7 @@ namespace AdventOfCode2018
 
             for (int i = 0; i < lines.Length; i++)
             {
-                string line = lines[i];
-                switch (line[0])
-                {
-                    case '+':
-                        total += int.Parse(line.Substring(1));
-                        break;
-                    case '-':
-                        total -= int.Parse(line.Substring(1));
-                        break;
-                }
+                total += int.Parse(lines[i]);
                 if (!met.Add(total))
                     break;
                 if (i == lines.Length - 1)
