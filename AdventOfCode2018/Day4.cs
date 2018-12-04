@@ -11,7 +11,6 @@ namespace AdventOfCode2018
     {
         public struct entry
         {
-            public int year;
             public int month;
             public int day;
             public int hour;
@@ -23,8 +22,6 @@ namespace AdventOfCode2018
 
         public static int entrySort(entry a, entry b)
         {
-            if (a.year != b.year)
-                return a.year < b.year ? -1 : 1;
             if (a.month != b.month)
                 return a.month < b.month ? -1 : 1;
             if (a.day != b.day)
@@ -46,7 +43,6 @@ namespace AdventOfCode2018
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
                 entry e = new entry();
-                e.year = int.Parse(values[0]);
                 e.month = int.Parse(values[1]);
                 e.day = int.Parse(values[2]);
                 e.hour = int.Parse(values[3]);
@@ -135,7 +131,6 @@ namespace AdventOfCode2018
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
                 entry e = new entry();
-                e.year = int.Parse(values[0]);
                 e.month = int.Parse(values[1]);
                 e.day = int.Parse(values[2]);
                 e.hour = int.Parse(values[3]);
