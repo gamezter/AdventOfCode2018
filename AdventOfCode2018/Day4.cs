@@ -9,7 +9,7 @@ namespace AdventOfCode2018
 {
     class Day4
     {
-        public struct entry
+        public struct Entry
         {
             public int month;
             public int day;
@@ -17,75 +17,77 @@ namespace AdventOfCode2018
             public int minute;
             public int id;
             public enum State { START, AWAKE, ASLEEP };
-            public State state; 
+            public State state;
         }
 
-        public static int entrySort(entry a, entry b)
+        public class EntrySort : IComparer<Entry>
         {
-            if (a.month != b.month)
-                return a.month < b.month ? -1 : 1;
-            if (a.day != b.day)
-                return a.day < b.day ? -1 : 1;
-            if (a.hour != b.hour)
-                return a.hour < b.hour ? -1 : 1;
-            if (a.minute != b.minute)
-                return a.minute < b.minute ? -1 : 1;
-            return 0;
+            public int Compare(Entry x, Entry y)
+            {
+                if (x.month != y.month)
+                    return x.month < y.month ? -1 : 1;
+                if (x.day != y.day)
+                    return x.day < y.day ? -1 : 1;
+                if (x.hour != y.hour)
+                    return x.hour < y.hour ? -1 : 1;
+                if (x.minute != y.minute)
+                    return x.minute < y.minute ? -1 : 1;
+                return 0;
+            }
         }
 
         public static void part1()
         {
             string[] lines = new StreamReader("day4.txt").ReadToEnd().Trim().Split('\n');
-            List<entry> entries = new List<entry>(lines.Length);
+            SortedSet<Entry> entries = new SortedSet<Entry>(new EntrySort());
 
-            for(int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
-                entry e = new entry();
-                e.month = int.Parse(values[1]);
-                e.day = int.Parse(values[2]);
-                e.hour = int.Parse(values[3]);
-                e.minute = int.Parse(values[4]);
+                Entry e = new Entry
+                {
+                    month = int.Parse(values[1]),
+                    day = int.Parse(values[2]),
+                    hour = int.Parse(values[3]),
+                    minute = int.Parse(values[4])
+                };
                 switch (values[5])
                 {
                     case "wakes":
                         e.id = -1;
-                        e.state = entry.State.AWAKE;
+                        e.state = Entry.State.AWAKE;
                         break;
                     case "falls":
                         e.id = -1;
-                        e.state = entry.State.ASLEEP;
+                        e.state = Entry.State.ASLEEP;
                         break;
                     case "Guard":
                         e.id = int.Parse(values[6]);
-                        e.state = entry.State.START;
+                        e.state = Entry.State.START;
                         break;
 
                 }
                 entries.Add(e);
             }
 
-            entries.Sort(entrySort);
-
             Dictionary<int, int[]> guardScores = new Dictionary<int, int[]>();
 
             int currentGuard = -1;
             int asleepTime = -1;
-            for(int i = 0; i < entries.Count; i++)
+            foreach (Entry e in entries)
             {
-                entry e = entries[i];
                 switch (e.state)
                 {
-                    case entry.State.START:
+                    case Entry.State.START:
                         currentGuard = e.id;
                         if (!guardScores.ContainsKey(currentGuard))
                             guardScores[currentGuard] = new int[61];
                         break;
-                    case entry.State.ASLEEP:
+                    case Entry.State.ASLEEP:
                         asleepTime = e.minute;
                         break;
-                    case entry.State.AWAKE:
+                    case Entry.State.AWAKE:
                         int[] guardScore = guardScores[currentGuard];
                         for (int j = asleepTime; j < e.minute; j++)
                         {
@@ -124,56 +126,55 @@ namespace AdventOfCode2018
         public static void part2()
         {
             string[] lines = new StreamReader("day4.txt").ReadToEnd().Trim().Split('\n');
-            List<entry> entries = new List<entry>(lines.Length);
+            SortedSet<Entry> entries = new SortedSet<Entry>(new EntrySort());
 
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
-                entry e = new entry();
-                e.month = int.Parse(values[1]);
-                e.day = int.Parse(values[2]);
-                e.hour = int.Parse(values[3]);
-                e.minute = int.Parse(values[4]);
+                Entry e = new Entry
+                {
+                    month = int.Parse(values[1]),
+                    day = int.Parse(values[2]),
+                    hour = int.Parse(values[3]),
+                    minute = int.Parse(values[4])
+                };
                 switch (values[5])
                 {
                     case "wakes":
                         e.id = -1;
-                        e.state = entry.State.AWAKE;
+                        e.state = Entry.State.AWAKE;
                         break;
                     case "falls":
                         e.id = -1;
-                        e.state = entry.State.ASLEEP;
+                        e.state = Entry.State.ASLEEP;
                         break;
                     case "Guard":
                         e.id = int.Parse(values[6]);
-                        e.state = entry.State.START;
+                        e.state = Entry.State.START;
                         break;
 
                 }
                 entries.Add(e);
             }
 
-            entries.Sort(entrySort);
-
             Dictionary<int, int[]> guardScores = new Dictionary<int, int[]>();
 
             int currentGuard = -1;
             int asleepTime = -1;
-            for (int i = 0; i < entries.Count; i++)
+            foreach(Entry e in entries)
             {
-                entry e = entries[i];
                 switch (e.state)
                 {
-                    case entry.State.START:
+                    case Entry.State.START:
                         currentGuard = e.id;
                         if (!guardScores.ContainsKey(currentGuard))
                             guardScores[currentGuard] = new int[60];
                         break;
-                    case entry.State.ASLEEP:
+                    case Entry.State.ASLEEP:
                         asleepTime = e.minute;
                         break;
-                    case entry.State.AWAKE:
+                    case Entry.State.AWAKE:
                         int[] guardScore = guardScores[currentGuard];
                         for (int j = asleepTime; j < e.minute; j++)
                         {
