@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2018
 {
@@ -11,10 +8,7 @@ namespace AdventOfCode2018
     {
         public struct Entry
         {
-            public int month;
-            public int day;
-            public int hour;
-            public int minute;
+            public DateTime date;
             public int id;
             public enum State { START, AWAKE, ASLEEP };
             public State state;
@@ -24,15 +18,7 @@ namespace AdventOfCode2018
         {
             public int Compare(Entry x, Entry y)
             {
-                if (x.month != y.month)
-                    return x.month < y.month ? -1 : 1;
-                if (x.day != y.day)
-                    return x.day < y.day ? -1 : 1;
-                if (x.hour != y.hour)
-                    return x.hour < y.hour ? -1 : 1;
-                if (x.minute != y.minute)
-                    return x.minute < y.minute ? -1 : 1;
-                return 0;
+                return DateTime.Compare(x.date, y.date);
             }
         }
 
@@ -45,13 +31,8 @@ namespace AdventOfCode2018
             {
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
-                Entry e = new Entry
-                {
-                    month = int.Parse(values[1]),
-                    day = int.Parse(values[2]),
-                    hour = int.Parse(values[3]),
-                    minute = int.Parse(values[4])
-                };
+                Entry e = new Entry();
+                e.date = DateTime.Parse(line.Substring(1, 16));
                 switch (values[5])
                 {
                     case "wakes":
@@ -85,15 +66,15 @@ namespace AdventOfCode2018
                             guardScores[currentGuard] = new int[61];
                         break;
                     case Entry.State.ASLEEP:
-                        asleepTime = e.minute;
+                        asleepTime = e.date.Minute;
                         break;
                     case Entry.State.AWAKE:
                         int[] guardScore = guardScores[currentGuard];
-                        for (int j = asleepTime; j < e.minute; j++)
+                        for (int j = asleepTime; j < e.date.Minute; j++)
                         {
                             guardScore[j]++;
                         }
-                        guardScore[60] += e.minute - asleepTime;
+                        guardScore[60] += e.date.Minute - asleepTime;
                         guardScores[currentGuard] = guardScore;
                         break;
                 }
@@ -132,13 +113,8 @@ namespace AdventOfCode2018
             {
                 string line = lines[i];
                 string[] values = lines[i].Split(new[] { '[', '-', ' ', ':', '#', ']' }, StringSplitOptions.RemoveEmptyEntries);
-                Entry e = new Entry
-                {
-                    month = int.Parse(values[1]),
-                    day = int.Parse(values[2]),
-                    hour = int.Parse(values[3]),
-                    minute = int.Parse(values[4])
-                };
+                Entry e = new Entry();
+                e.date = DateTime.Parse(line.Substring(1, 16));
                 switch (values[5])
                 {
                     case "wakes":
@@ -172,11 +148,11 @@ namespace AdventOfCode2018
                             guardScores[currentGuard] = new int[60];
                         break;
                     case Entry.State.ASLEEP:
-                        asleepTime = e.minute;
+                        asleepTime = e.date.Minute;
                         break;
                     case Entry.State.AWAKE:
                         int[] guardScore = guardScores[currentGuard];
-                        for (int j = asleepTime; j < e.minute; j++)
+                        for (int j = asleepTime; j < e.date.Minute; j++)
                         {
                             guardScore[j]++;
                         }
