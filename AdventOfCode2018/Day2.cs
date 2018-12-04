@@ -57,55 +57,40 @@ namespace AdventOfCode2018
                     counts[line[j] - 97]++;
                 }
 
-                for(int j = 0; j < counts.Length; j++)
+                bool hasTwo = false;
+                bool hasThree = false;
+                for (int j = 0; j < counts.Length; j++)
                 {
-                    if (counts[j] == 2 || counts[j] == 3)
-                        myList.Add(line);
+                    hasTwo |= counts[j] == 2;
+                    hasThree |= counts[j] == 3;
                     counts[j] = 0;
                 }
+
+                if (hasTwo || hasThree)
+                    myList.Add(line);
             }
 
-            string line1 = "";
-            string line2 = "";
-
+            HashSet<string> met = new HashSet<string>();
+            string newString = "";
             bool found = false;
 
-            for(int i = 0; i < myList.Count - 1; i++)
+            for(int i = 0; i < myList[0].Length; i++)
             {
-                line1 = myList[i];
-                for(int j = i + 1; j < myList.Count; j++)
+                for(int j = 0; j < myList.Count; j++)
                 {
-                    line2 = myList[j];
-                    int diff = 0;
-                    for(int k = 0; k < line1.Length; k++)
-                    {
-                        if(line1[k] != line2[k])
-                        {
-                            diff++;
-                            if (diff == 2)
-                                break;
-                        }
-                    }
-                    if (diff == 1)
+                    newString = myList[j].Substring(0, i) + myList[j].Substring(i + 1);
+                    if (!met.Add(newString))
                     {
                         found = true;
                         break;
                     }
-                        
                 }
+                met.Clear();
                 if (found)
                     break;
             }
 
-            StringBuilder final = new StringBuilder();
-
-            for(int i = 0; i < line1.Length; i++)
-            {
-                if (line1[i] == line2[i])
-                    final.Append(line1[i]);
-            }
-
-            Console.WriteLine(final);
+            Console.WriteLine(newString);
             Console.Read();
         }
     }
