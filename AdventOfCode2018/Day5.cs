@@ -12,14 +12,7 @@ namespace AdventOfCode2018
             Stack<char> stack = new Stack<char>();
             for(int i = 0; i < input.Length; i++)
             {
-                if (stack.Count == 0)
-                {
-                    stack.Push(input[i]);
-                    continue;
-                }
-                    
-                int delta = stack.Peek() - input[i];
-                if (delta == 32 || delta == -32)
+                if (stack.Count != 0 && (stack.Peek() ^ input[i]) == 32)
                     stack.Pop();
                 else
                     stack.Push(input[i]);
@@ -37,17 +30,10 @@ namespace AdventOfCode2018
             {
                 for (int j = 0; j < input.Length; j++)
                 {
-                    if (stack.Count == 0)
-                    {
-                        stack.Push(input[j]);
-                        continue;
-                    }
-
-                    if (input[j] - 65 == i || input[j] - 97 == i)
+                    if (input[j] - i == 'a' || input[j] - i == 'A')
                         continue;
 
-                    int delta = stack.Peek() - input[j];
-                    if (delta == 32 || delta == -32)
+                    if (stack.Count != 0 && (stack.Peek() ^ input[j]) == 32)
                         stack.Pop();
                     else
                         stack.Push(input[j]);
