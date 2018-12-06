@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2018
 {
@@ -65,37 +61,24 @@ namespace AdventOfCode2018
 
             int width = maxX - minX;
             int height = maxY - minY;
-            int[] area = new int[width * height];
-            for(int i = 0; i < area.Length; i++)
+
+            int[] counts = new int[coord.Length / 2];
+            for(int i = 0; i < width * height; i++)
             {
                 int x = i % width + minX;
                 int y = i / width + minY;
-                area[i] = findClosest(x, y, coord);
-            }
+                int closest = findClosest(x, y, coord);
+                if(closest != -1)
+                {
+                    if (x == minX || x == maxX || y == minY || y == maxY)
+                    {
+                        counts[closest] = -1;
+                        continue;
+                    }
 
-            int[] counts = new int[coord.Length / 2];
-            for(int i = 0; i < area.Length; i++)
-            {
-                if(area[i] != -1)
-                    counts[area[i]]++;
-            }
-            for(int i = 0; i < width; i++)
-            {
-                int topX = i;
-                int bottomX = width * (height - 1) + i;
-                if (area[topX] != -1)
-                    counts[area[topX]] = 0;
-                if (area[bottomX] != -1)
-                    counts[area[bottomX]] = 0;
-            }
-            for (int i = 0; i < height; i++)
-            {
-                int leftY = i * width;
-                int rightY = leftY + width - 1;
-                if (area[leftY] != -1)
-                    counts[area[leftY]] = 0;
-                if (area[rightY] != -1)
-                    counts[area[rightY]] = 0;
+                    if (counts[closest] != -1)
+                        counts[closest]++;
+                }
             }
             int max = 0;
             for(int i = 0; i < counts.Length; i++)
@@ -130,18 +113,12 @@ namespace AdventOfCode2018
 
             int width = maxX - minX;
             int height = maxY - minY;
-            int[] area = new int[width * height];
-            for (int i = 0; i < area.Length; i++)
+            int count = 0;
+            for (int i = 0; i < width * height; i++)
             {
                 int x = i % width + minX;
                 int y = i / width + minY;
-                area[i] = findTotalDistancce(x, y, coord) < 10000 ? 1 : 0;
-            }
-
-            int count = 0;
-            for (int i = 0; i < area.Length; i++)
-            {
-                if (area[i] == 1)
+                if(findTotalDistancce(x, y, coord) < 10000)
                     count++;
             }
             Console.WriteLine(count);
