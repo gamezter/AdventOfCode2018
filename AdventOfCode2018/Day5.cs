@@ -26,6 +26,7 @@ namespace AdventOfCode2018
             string input = new StreamReader("day5.txt").ReadToEnd().Trim();
             int[] chars = new int[26];
             Stack<char> stack = new Stack<char>();
+
             for (int i = 0; i < chars.Length; i++)
             {
                 for (int j = 0; j < input.Length; j++)
