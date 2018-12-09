@@ -46,6 +46,7 @@ namespace AdventOfCode2018
             {
                 coord[i] = int.Parse(stringCoordinates[i]);
             }
+
             int minX = coord[0], minY = coord[1], maxX = coord[0], maxY = coord[1];
             for(int i = 0; i < coord.Length; i += 2)
             {
@@ -71,12 +72,8 @@ namespace AdventOfCode2018
                 if(closest != -1)
                 {
                     if (x == minX || x == maxX || y == minY || y == maxY)
-                    {
                         counts[closest] = -1;
-                        continue;
-                    }
-
-                    if (counts[closest] != -1)
+                    else if (counts[closest] != -1)
                         counts[closest]++;
                 }
             }
