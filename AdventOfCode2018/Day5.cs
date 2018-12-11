@@ -24,10 +24,10 @@ namespace AdventOfCode2018
         public static void part2()
         {
             string input = new StreamReader("day5.txt").ReadToEnd().Trim();
-            int[] chars = new int[26];
             Stack<char> stack = new Stack<char>();
+            int min = int.MaxValue;
 
-            for (int i = 0; i < chars.Length; i++)
+            for (int i = 0; i < 26; i++)
             {
                 for (int j = 0; j < input.Length; j++)
                 {
@@ -39,18 +39,12 @@ namespace AdventOfCode2018
                     else
                         stack.Push(input[j]);
                 }
-                chars[i] = stack.Count;
+                if (stack.Count < min)
+                    min = stack.Count;
                 stack.Clear();
             }
 
-            int min = 0;
-            for(int i = 0; i < chars.Length; i++)
-            {
-                if (chars[i] < chars[min])
-                    min = i;
-            }
-            
-            Console.WriteLine(chars[min]);
+            Console.WriteLine(min);
             Console.Read();
         }
     }
