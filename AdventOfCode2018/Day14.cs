@@ -63,9 +63,9 @@ namespace AdventOfCode2018
                 if (left + input.Length < scores.Count)
                 {
                     bool found = true;
-                    for(int i = left; i < left + input.Length; i++)
+                    for(int i = 0; i < input.Length; i++)
                     {
-                        if (scores[i] != input[i - left])
+                        if (scores[left + i] != input[i])
                         {
                             found = false;
                             break;
