@@ -105,6 +105,39 @@ namespace AdventOfCode2018
             return a.score < b.score ? -1 : 1;            
         }
 
+        public static pos traceBack(pos start, int[,] distances)
+        {
+            pos current = start;
+            while(current.score > 1)
+            {
+                if (current.y > 0 && distances[current.x, current.y - 1] == current.score - 1)
+                {
+                    current.y--;
+                    current.score--;
+                    continue;
+                }
+                if (current.x < 32 && distances[current.x + 1, current.y] == current.score - 1)
+                {
+                    current.x++;
+                    current.score--;
+                    continue;
+                }
+                if (current.x > 0 && distances[current.x - 1, current.y] == current.score - 1)
+                {
+                    current.x--;
+                    current.score--;
+                    continue;
+                }
+                if (current.y < 32 && distances[current.x, current.y  + 1] == current.score - 1)
+                {
+                    current.y++;
+                    current.score--;
+                    continue;
+                }
+            }
+            return current;
+        }
+
         public static void part1()
         {
             string[] lines = new StreamReader("day15.txt").ReadToEnd().Trim().Split('\n');
@@ -147,6 +180,7 @@ namespace AdventOfCode2018
                             scores.Add(new pos(x, y + 1, distances[x, y + 1]));
                     }
                     scores.Sort(sort);
+                    pos next = traceBack(scores[0], distances);
 
                     debugDistances(distances);
                 }
