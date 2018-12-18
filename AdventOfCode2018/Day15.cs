@@ -16,12 +16,13 @@ namespace AdventOfCode2018
 
         public struct pos
         {
-            public int x, y;
+            public int x, y, score;
 
-            public pos(int x, int y)
+            public pos(int x, int y, int score)
             {
                 this.x = x;
                 this.y = y;
+                this.score = score;
             }
         }
 
@@ -31,21 +32,20 @@ namespace AdventOfCode2018
                 for (int j = 0; j < 32; j++)
                     distances[i, j] = -1;
 
-            distances[x, y] = 0;
-
             Queue<pos> open = new Queue<pos>();
-            open.Enqueue(new pos(x, y));
+            distances[x, y] = 0;
+            open.Enqueue(new pos(x, y, 0));
             while(open.Count > 0)
             {
                 pos c = open.Dequeue();
-                int nextVal = distances[c.x, c.y] + 1;
+                int nextVal = c.score + 1;
                 if (map[c.x + 1, c.y] == '.')
                 {
                     int val = distances[c.x + 1, c.y];
                     if(val == -1 || val > nextVal)
                     {
                         distances[c.x + 1, c.y] = nextVal;
-                        open.Enqueue(new pos(c.x + 1, c.y));
+                        open.Enqueue(new pos(c.x + 1, c.y, nextVal));
                     }                        
                 }
                 if (map[c.x, c.y + 1] == '.')
@@ -54,7 +54,7 @@ namespace AdventOfCode2018
                     if (val == -1 || val > nextVal)
                     {
                         distances[c.x, c.y + 1] = nextVal;
-                        open.Enqueue(new pos(c.x, c.y + 1));
+                        open.Enqueue(new pos(c.x, c.y + 1, nextVal));
                     }
                 }
                 if (map[c.x - 1, c.y] == '.')
@@ -63,7 +63,7 @@ namespace AdventOfCode2018
                     if (val == -1 || val > nextVal)
                     {
                         distances[c.x - 1, c.y] = nextVal;
-                        open.Enqueue(new pos(c.x - 1, c.y));
+                        open.Enqueue(new pos(c.x - 1, c.y, nextVal));
                     }
                 }
                 if (map[c.x, c.y - 1] == '.')
@@ -72,7 +72,7 @@ namespace AdventOfCode2018
                     if (val == -1 || val > nextVal)
                     {
                         distances[c.x, c.y - 1] = nextVal;
-                        open.Enqueue(new pos(c.x, c.y - 1));
+                        open.Enqueue(new pos(c.x, c.y - 1, nextVal));
                     }
                 }
             }
@@ -92,6 +92,17 @@ namespace AdventOfCode2018
                 Console.WriteLine();
             }
             Console.Read();
+        }
+
+        public static int sort(pos a, pos b)
+        {
+            if(a.score == b.score)
+            {
+                if (a.y == b.y)
+                    return a.x > b.x ? -1 : 1;
+                return a.y < b.y ? -1 : 1;
+            }
+            return a.score < b.score ? -1 : 1;            
         }
 
         public static void part1()
@@ -118,7 +129,24 @@ namespace AdventOfCode2018
                 int[,] distances = new int[32, 32];
                 for(int i = 0; i < elves.Count; i++)
                 {
-                    fillDistances(elves[i].x, elves[i].y, distances, map);
+                    Unit elf = elves[i];
+                    fillDistances(elf.x, elf.y, distances, map);
+                    List<pos> scores = new List<pos>();
+                    for(int j = 0; j < goblins.Count; j++)
+                    {
+                        Unit goblin = goblins[j];
+                        int x = goblin.x;
+                        int y = goblin.y;
+                        if (x != 0 && distances[x - 1, y] != -1)
+                            scores.Add(new pos(x - 1, y, distances[x - 1, y]));
+                        if (x != 31 && distances[x + 1, y] != -1)
+                            scores.Add(new pos(x + 1, y, distances[x + 1, y]));
+                        if (y != 0 && distances[x, y - 1] != -1)
+                            scores.Add(new pos(x, y - 1, distances[x, y - 1]));
+                        if (y != 31 && distances[x, y + 1] != -1)
+                            scores.Add(new pos(x, y + 1, distances[x, y + 1]));
+                    }
+                    scores.Sort(sort);
 
                     debugDistances(distances);
                 }
