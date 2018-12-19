@@ -7,6 +7,14 @@ namespace AdventOfCode2018
 {
     class Day15
     {
+        public static int[][] offsets = 
+        {
+            new []{ 1, 0 },
+            new []{ 0, 1 },
+            new []{ -1, 0 },
+            new []{ 0, -1 }
+        };
+
         public struct Unit
         {
             public int x, y, health;
@@ -38,40 +46,20 @@ namespace AdventOfCode2018
             {
                 pos c = open.Dequeue();
                 int nextVal = c.score + 1;
-                if (map[c.x + 1, c.y] == '.')
+
+                foreach(int[] o in offsets)
                 {
-                    int val = distances[c.x + 1, c.y];
-                    if(val == -1 || val > nextVal)
+                    int nx = c.x + o[0];
+                    int ny = c.y + o[1];
+
+                    if (map[nx, ny] == '.')
                     {
-                        distances[c.x + 1, c.y] = nextVal;
-                        open.Enqueue(new pos(c.x + 1, c.y, nextVal));
-                    }                        
-                }
-                if (map[c.x, c.y + 1] == '.')
-                {
-                    int val = distances[c.x, c.y + 1];
-                    if (val == -1 || val > nextVal)
-                    {
-                        distances[c.x, c.y + 1] = nextVal;
-                        open.Enqueue(new pos(c.x, c.y + 1, nextVal));
-                    }
-                }
-                if (map[c.x - 1, c.y] == '.')
-                {
-                    int val = distances[c.x - 1, c.y];
-                    if (val == -1 || val > nextVal)
-                    {
-                        distances[c.x - 1, c.y] = nextVal;
-                        open.Enqueue(new pos(c.x - 1, c.y, nextVal));
-                    }
-                }
-                if (map[c.x, c.y - 1] == '.')
-                {
-                    int val = distances[c.x, c.y - 1];
-                    if (val == -1 || val > nextVal)
-                    {
-                        distances[c.x, c.y - 1] = nextVal;
-                        open.Enqueue(new pos(c.x, c.y - 1, nextVal));
+                        int val = distances[nx, ny];
+                        if (val == -1 || val > nextVal)
+                        {
+                            distances[nx, ny] = nextVal;
+                            open.Enqueue(new pos(nx, ny, nextVal));
+                        }
                     }
                 }
             }
@@ -105,21 +93,21 @@ namespace AdventOfCode2018
             Queue<pos> fronts = new Queue<pos>();
             HashSet<pos> ends = new HashSet<pos>();
             fronts.Enqueue(start);
-            while (fronts.Count != 0)
+            while (fronts.Count > 0)
             {
                 pos current = fronts.Dequeue();
                 if (current.score == 1)
                     ends.Add(current);
                 else
                 {
-                    if (distances[current.x, current.y - 1] == current.score - 1)
-                        fronts.Enqueue(new pos(current.x, current.y - 1, current.score - 1));
-                    if (distances[current.x + 1, current.y] == current.score - 1)
-                        fronts.Enqueue(new pos(current.x + 1, current.y, current.score - 1));
-                    if (distances[current.x - 1, current.y] == current.score - 1)
-                        fronts.Enqueue(new pos(current.x - 1, current.y, current.score - 1));
-                    if (distances[current.x, current.y + 1] == current.score - 1)
-                        fronts.Enqueue(new pos(current.x, current.y + 1, current.score - 1));
+                    foreach (int[] o in offsets)
+                    {
+                        int nx = current.x + o[0];
+                        int ny = current.y + o[1];
+
+                        if (distances[nx, ny] == current.score - 1)
+                            fronts.Enqueue(new pos(nx, ny, current.score - 1));
+                    }
                 }
             }
             List<pos> endsList = ends.ToList();
@@ -154,7 +142,6 @@ namespace AdventOfCode2018
                 units.RemoveAll(u => u.health < 1);
                 units.Sort((e1, e2) => e1.y == e2.y ? e1.x < e2.x ? -1 : 1 : e1.y < e2.y ? -1 : 1);
 
-                //debug
                 {
                     Console.WriteLine();
                     Console.WriteLine(rounds);
@@ -165,7 +152,6 @@ namespace AdventOfCode2018
                     {
                         Console.WriteLine((units[i].isElf ? "E" : "G") + "(" + units[i].health + ")");
                     }
-                    //Console.Read();
                 }
 
                 int[,] distances = new int[width, height];
@@ -213,16 +199,16 @@ namespace AdventOfCode2018
                             Unit enemy = units[j];
                             if (enemy.isElf == unit.isElf || enemy.health < 1)
                                 continue;
-                            int x = enemy.x;
-                            int y = enemy.y;
-                            if (distances[x - 1, y] != -1)
-                                scores.Add(new pos(x - 1, y, distances[x - 1, y]));
-                            if (distances[x + 1, y] != -1)
-                                scores.Add(new pos(x + 1, y, distances[x + 1, y]));
-                            if (distances[x, y - 1] != -1)
-                                scores.Add(new pos(x, y - 1, distances[x, y - 1]));
-                            if (distances[x, y + 1] != -1)
-                                scores.Add(new pos(x, y + 1, distances[x, y + 1]));
+
+                            foreach (int[] o in offsets)
+                            {
+                                int nx = enemy.x + o[0];
+                                int ny = enemy.y + o[1];
+                                int dist = distances[nx, ny];
+
+                                if (dist != -1)
+                                    scores.Add(new pos(nx, ny, dist));
+                            }
                         }
                         if(scores.Count != 0)
                         {
@@ -396,16 +382,16 @@ end:
                             Unit enemy = units[j];
                             if (enemy.isElf == unit.isElf || enemy.health < 1)
                                 continue;
-                            int x = enemy.x;
-                            int y = enemy.y;
-                            if (distances[x - 1, y] != -1)
-                                scores.Add(new pos(x - 1, y, distances[x - 1, y]));
-                            if (distances[x + 1, y] != -1)
-                                scores.Add(new pos(x + 1, y, distances[x + 1, y]));
-                            if (distances[x, y - 1] != -1)
-                                scores.Add(new pos(x, y - 1, distances[x, y - 1]));
-                            if (distances[x, y + 1] != -1)
-                                scores.Add(new pos(x, y + 1, distances[x, y + 1]));
+
+                            foreach (int[] o in offsets)
+                            {
+                                int nx = enemy.x + o[0];
+                                int ny = enemy.y + o[1];
+                                int dist = distances[nx, ny];
+
+                                if (dist != -1)
+                                    scores.Add(new pos(nx, ny, dist));
+                            }
                         }
                         if (scores.Count != 0)
                         {
@@ -469,26 +455,11 @@ end:
             end:
             units.RemoveAll(u => u.health < 1);
 
-            //debug
-            {
-                Console.WriteLine();
-                Console.WriteLine(rounds);
-                Console.WriteLine();
-                debugMap(map, width, height);
-
-                for (int i = 0; i < units.Count; i++)
-                {
-                    Console.WriteLine((units[i].isElf ? "E" : "G") + "(" + units[i].health + ")");
-                }
-            }
-
             int sum = 0;
             for (int i = 0; i < units.Count; i++)
-            {
                 sum += units[i].health;
-            }
 
-            Console.WriteLine(sum + " " + sum * rounds);
+            Console.WriteLine(sum * rounds);
             Console.Read();
         }
     }
