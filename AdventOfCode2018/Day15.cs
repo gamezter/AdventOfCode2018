@@ -142,18 +142,6 @@ namespace AdventOfCode2018
                 units.RemoveAll(u => u.health < 1);
                 units.Sort((e1, e2) => e1.y == e2.y ? e1.x < e2.x ? -1 : 1 : e1.y < e2.y ? -1 : 1);
 
-                {
-                    Console.WriteLine();
-                    Console.WriteLine(rounds);
-                    Console.WriteLine();
-                    debugMap(map, width, height);
-
-                    for (int i = 0; i < units.Count; i++)
-                    {
-                        Console.WriteLine((units[i].isElf ? "E" : "G") + "(" + units[i].health + ")");
-                    }
-                }
-
                 int[,] distances = new int[width, height];
                 for(int i = 0; i < units.Count; i++)
                 {
@@ -271,27 +259,13 @@ namespace AdventOfCode2018
 
 end:
             units.RemoveAll(u => u.health < 1);
-
-            //debug
-            {
-                Console.WriteLine();
-                Console.WriteLine(rounds);
-                Console.WriteLine();
-                debugMap(map, width, height);
-
-                for (int i = 0; i < units.Count; i++)
-                {
-                    Console.WriteLine((units[i].isElf ? "E" : "G") + "(" + units[i].health + ")");
-                }
-            }
-
             int sum = 0;
             for(int i = 0; i < units.Count; i++)
             {
                 sum += units[i].health;
             }
 
-            Console.WriteLine(sum + " " + sum * rounds);
+            Console.WriteLine(sum * rounds);
             Console.Read();
         }
 
