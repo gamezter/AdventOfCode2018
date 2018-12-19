@@ -81,9 +81,9 @@ namespace AdventOfCode2018
 
         public static void debugDistances(int[,] distances)
         {
-            for(int y = 0; y < 32; y++)
+            for(int y = 0; y < 7; y++)
             {
-                for(int x = 0; x < 32; x++)
+                for(int x = 0; x < 7; x++)
                 {
                     if(distances[x, y] < 10 && distances[x,y] != -1)
                         Console.Write(" " + distances[x, y] + " ");
@@ -92,7 +92,6 @@ namespace AdventOfCode2018
                 }
                 Console.WriteLine();
             }
-            Console.Read();
         }
 
         public static void debugMap(char[,] map)
@@ -105,7 +104,6 @@ namespace AdventOfCode2018
                 }
                 Console.WriteLine();
             }
-            //Console.Read();
         }
 
         public static int sort(pos a, pos b)
@@ -124,25 +122,25 @@ namespace AdventOfCode2018
             pos current = start;
             while(current.score > 1)
             {
-                if (current.y > 0 && distances[current.x, current.y - 1] == current.score - 1)
+                if (distances[current.x, current.y - 1] == current.score - 1)
                 {
                     current.y--;
                     current.score--;
                     continue;
                 }
-                if (current.x < 7 && distances[current.x + 1, current.y] == current.score - 1)
+                if (distances[current.x + 1, current.y] == current.score - 1)
                 {
                     current.x++;
                     current.score--;
                     continue;
                 }
-                if (current.x > 0 && distances[current.x - 1, current.y] == current.score - 1)
+                if (distances[current.x - 1, current.y] == current.score - 1)
                 {
                     current.x--;
                     current.score--;
                     continue;
                 }
-                if (current.y < 7 && distances[current.x, current.y  + 1] == current.score - 1)
+                if (distances[current.x, current.y  + 1] == current.score - 1)
                 {
                     current.y++;
                     current.score--;
@@ -157,11 +155,11 @@ namespace AdventOfCode2018
             //string[] lines = new StreamReader("day15.txt").ReadToEnd().Trim().Split('\n');
             string[] lines = new[] {
                 "#######",
-                "#G..#E#",
-                "#E#E.E#",
-                "#G.##.#",
-                "#...#E#",
-                "#...E.#",
+                "#E..EG#",
+                "#.#G.E#",
+                "#E.##E#",
+                "#G..#.#",
+                "#..E#.#",
                 "#######"
             };
 
@@ -186,20 +184,33 @@ namespace AdventOfCode2018
             while (true)
             {
                 units.Sort((e1, e2) => e1.y == e2.y ? e1.x < e2.x ? -1 : 1 : e1.y < e2.y ? -1 : 1);
+
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(rounds);
+                    Console.WriteLine();
+                    debugMap(map);
+
+                    for (int i = 0; i < units.Count; i++)
+                    {
+                        Console.WriteLine((units[i].isElf ? "E" : "G") + "(" + units[i].health + ")");
+                    }
+                    Console.Read();
+                }
+
                 int[,] distances = new int[width, height];
-                bool enemyExists = false;
                 for(int i = 0; i < units.Count; i++)
                 {
                     Unit unit = units[i];
-
+                    if (unit.health < 1)
+                        continue;
                     // find adjacent enemies
                     List<int> adjacent = new List<int>();
                     for(int j = 0; j < units.Count; j++)
                     {
                         Unit enemy = units[j];
-                        if (enemy.isElf == unit.isElf)
+                        if (enemy.isElf == unit.isElf || enemy.health < 1)
                             continue;
-                        enemyExists = true;
                         if (Math.Abs(enemy.x - unit.x) + Math.Abs(enemy.y - unit.y) == 1)
                             adjacent.Add(j);
                     }
@@ -212,7 +223,7 @@ namespace AdventOfCode2018
                         for (int j = 0; j < units.Count; j++)
                         {
                             Unit enemy = units[j];
-                            if (enemy.isElf == unit.isElf)
+                            if (enemy.isElf == unit.isElf || enemy.health < 1)
                                 continue;
                             int x = enemy.x;
                             int y = enemy.y;
@@ -239,7 +250,7 @@ namespace AdventOfCode2018
                             for (int j = 0; j < units.Count; j++)
                             {
                                 Unit enemy = units[j];
-                                if (enemy.isElf == unit.isElf)
+                                if (enemy.isElf == unit.isElf || enemy.health < 1)
                                     continue;
                                 if (Math.Abs(enemy.x - unit.x) + Math.Abs(enemy.y - unit.y) == 1)
                                     adjacent.Add(j);
@@ -266,31 +277,42 @@ namespace AdventOfCode2018
                             Unit victim = units[minIndex];
                             victim.health -= 3;
                             if (victim.health < 1)
+                            {
                                 map[victim.x, victim.y] = '.';
+                            }
+                                
                             units[minIndex] = victim;
+
+                            int elves = 0;
+                            int goblins = 0;
+                            for (int j = 0; j < units.Count; j++)
+                            {
+                                if (units[j].health < 1)
+                                    continue;
+                                if (units[j].isElf)
+                                    elves++;
+                                else
+                                    goblins++;
+                            }
+
+                            if (elves == 0 || goblins == 0)
+                                goto end;
                         }
                     }
                 }
-                if (!enemyExists)
-                    break;
-                enemyExists = false;
                 units.RemoveAll(u => u.health < 1);
-                debugMap(map);
-
                 rounds++;
-                Console.WriteLine();
-                Console.WriteLine(rounds);
-                Console.WriteLine();
             }
 
+end:
             int sum = 0;
             for(int i = 0; i < units.Count; i++)
             {
                 sum += units[i].health;
             }
 
-            Console.WriteLine(sum * rounds);
-            Console.ReadLine();
+            Console.WriteLine(sum + " " + sum * rounds);
+            Console.Read();
         }
     }
 }
