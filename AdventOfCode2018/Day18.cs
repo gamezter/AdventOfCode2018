@@ -5,18 +5,17 @@ namespace AdventOfCode2018
 {
     class Day18
     {
-        public static int[][] offsets = new[]
+        public static int[,] offsets = 
         {
-            new []{ -1, -1 },
-            new []{ 0, -1 },
-            new []{ 1, -1 },
-            new []{ -1, 0 },
-            new []{ 1, 0 },
-            new []{ -1, 1 },
-            new []{ 0, 1 },
-            new []{ 1, 1 },
+            {-1,-1 },
+            { 0,-1 },
+            { 1,-1 },
+            {-1, 0 },
+            { 1, 0 },
+            {-1, 1 },
+            { 0, 1 },
+            { 1, 1 },
         };
-
 
         public static void part1()
         {
@@ -48,7 +47,7 @@ namespace AdventOfCode2018
 
                         for (int j = 0; j < 8; j++)
                         {
-                            char c = state[y + offsets[j][1]][x + offsets[j][0]];
+                            char c = state[y + offsets[j, 1]][x + offsets[j, 0]];
                             if (c == '|')
                                 trees++;
                             else if (c == '#')
@@ -126,7 +125,7 @@ namespace AdventOfCode2018
 
                         for(int j = 0; j < 8; j++)
                         {
-                            char c = state[y + offsets[j][1]][x + offsets[j][0]];
+                            char c = state[y + offsets[j, 1]][x + offsets[j, 0]];
                             if (c == '|')
                                 trees++;
                             else if (c == '#')
