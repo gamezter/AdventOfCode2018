@@ -23,7 +23,7 @@ namespace AdventOfCode2018
         {
             for (int y = py - 10 < 0 ? 0 : py - 10; y < py + 10; y++)
             {
-                for (int x = px - 10 < 0 ? 0 : px - 10; x < px + 10; x++)
+                for (int x = px - 30 < 0 ? 0 : px - 30; x < px + 30; x++)
                 {
                     Console.Write(map[x, y]);
                 }
@@ -36,59 +36,74 @@ namespace AdventOfCode2018
         public static void part1()
         {
             string[] lines = new StreamReader("day17.txt").ReadToEnd().Trim().Split('\n');
-            int xMax = 0, yMax = 0, yMin = 5000;
+            int xMax = 0, yMax = 0, xMin = 500000, yMin = 500000;
             for(int i = 0; i < lines.Length; i++)
             {
                 string[] line = lines[i].Split(new[] { '=', ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
-                if(line[0] == "x")
+                int axis = int.Parse(line[1]);
+                int min = int.Parse(line[3]);
+                int max = int.Parse(line[4]);
+
+                if (line[0] == "x")
                 {
-                    int x = int.Parse(line[1]);
-                    if (x > xMax)
-                        xMax = x;
-                    int y = int.Parse(line[4]);
-                    if (y > yMax)
-                        yMax = y;
-                    if (y < yMin)
-                        yMin = y;
+                    if (axis < xMin)
+                        xMin = axis;
+                    if (axis > xMax)
+                        xMax = axis;
+                    if (min < yMin)
+                        yMin = min;
+                    if (max > yMax)
+                        yMax = max;
                 }
                 else
                 {
-                    int y = int.Parse(line[1]);
-                    if (y > yMax)
-                        yMax = y;
-                    int x = int.Parse(line[4]);
-                    if (x > xMax)
-                        xMax = x;
-                    if (y < yMin)
-                        yMin = y;
+                    if (axis < yMin)
+                        yMin = axis;
+                    if (axis > yMax)
+                        yMax = axis;
+                    if (min < xMin)
+                        xMin = min;
+                    if (max > xMax)
+                        xMax = max;
                 }
             }
+            xMin--;//space for water falling
+            xMax++;
 
-            char[,] map = new char[xMax + 10, yMax + 10];
+            char[,] map = new char[xMax + 1 - xMin, yMax + 1 - yMin];
             // populate map
             for (int i = 0; i < lines.Length; i++)
             {
                 string[] line = lines[i].Split(new[] { '=', ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
                 if (line[0] == "x")
                 {
-                    int x = int.Parse(line[1]);
-                    int y0 = int.Parse(line[3]);
-                    int y1 = int.Parse(line[4]);
+                    int x = int.Parse(line[1]) - xMin;
+                    int y0 = int.Parse(line[3]) - yMin;
+                    int y1 = int.Parse(line[4]) - yMin;
                     for(int y = y0; y <= y1; y++)
                         map[x, y] = '#';
                 }
                 else
                 {
-                    int y = int.Parse(line[1]);
-                    int x0 = int.Parse(line[3]);
-                    int x1 = int.Parse(line[4]);
+                    int y = int.Parse(line[1]) - yMin;
+                    int x0 = int.Parse(line[3]) - xMin;
+                    int x1 = int.Parse(line[4]) - xMin;
                     for (int x = x0; x <= x1; x++)
                         map[x, y] = '#';
                 }
             }
 
+            /*for(int y = 0; y < yMax - yMin + 1; y++)
+            {
+                for (int x = 0; x < xMax - xMin + 1; x++)
+                {
+                    Console.Write(map[x, y]);
+                }
+                Console.WriteLine();
+            }*/
+
             Queue<Pos> spouts = new Queue<Pos>();
-            spouts.Enqueue(new Pos(500, 0));
+            spouts.Enqueue(new Pos(500 - xMin, 0));
             skip:
             while (spouts.Count > 0)
             {
@@ -100,7 +115,7 @@ namespace AdventOfCode2018
                 {
                     map[spout.x, spout.y] = '|';
                     spout.y++;
-                    if (spout.y > yMax)
+                    if (spout.y > yMax - yMin)
                         goto skip;
                 }
                 // fill phase
@@ -112,7 +127,8 @@ namespace AdventOfCode2018
                     map[x, y] = '~';
                     for (x = spout.x - 1;  map[x, y] != '#'; x--)
                     {
-                        if(map[x, y + 1] != 0)
+                        char below = map[x, y + 1];
+                        if (below != 0 && below != '|')
                         {
                             map[x, y] = '~';
                         }
@@ -126,7 +142,8 @@ namespace AdventOfCode2018
                     }
                     for (x = spout.x + 1;  map[x, y] != '#'; x++)
                     {
-                        if(map[x, y + 1] != 0)
+                        char below = map[x, y + 1];
+                        if (below != 0 && below != '|')
                         {
                             map[x, y] = '~';
                         }
@@ -134,17 +151,18 @@ namespace AdventOfCode2018
                         {
                             spouts.Enqueue(new Pos(x, y));
                             spill = true;
-                            break;
+                            break;                           
                         }
                         
                     }
                     y--;
+                    //drawAround(spout.x, y, map);
                 }
             }
             int count = 0;
-            for(int x = 0; x < xMax + 2; x++)
+            for(int x = 0; x < xMax + 1 - xMin; x++)
             {
-                for(int y = yMin; y <= yMax; y++)
+                for(int y = 0; y < yMax + 1 - yMin; y++)
                 {
                     char c = map[x, y];
                     if (c == '|' || c == '~')
