@@ -23,7 +23,7 @@ namespace AdventOfCode2018
         {
             for (int y = py - 10 < 0 ? 0 : py - 10; y < py + 10; y++)
             {
-                for (int x = px - 30 < 0 ? 0 : px - 30; x < px + 30; x++)
+                for (int x = px - 10 < 0 ? 0 : px - 10; x < px + 10; x++)
                 {
                     Console.Write(map[x, y]);
                 }
@@ -36,7 +36,7 @@ namespace AdventOfCode2018
         public static void part1()
         {
             string[] lines = new StreamReader("day17.txt").ReadToEnd().Trim().Split('\n');
-            int xMax = 0, yMax = 0;
+            int xMax = 0, yMax = 0, yMin = 5000;
             for(int i = 0; i < lines.Length; i++)
             {
                 string[] line = lines[i].Split(new[] { '=', ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
@@ -48,6 +48,8 @@ namespace AdventOfCode2018
                     int y = int.Parse(line[4]);
                     if (y > yMax)
                         yMax = y;
+                    if (y < yMin)
+                        yMin = y;
                 }
                 else
                 {
@@ -57,10 +59,12 @@ namespace AdventOfCode2018
                     int x = int.Parse(line[4]);
                     if (x > xMax)
                         xMax = x;
+                    if (y < yMin)
+                        yMin = y;
                 }
             }
 
-            char[,] map = new char[xMax + 1, yMax + 1];
+            char[,] map = new char[xMax + 10, yMax + 10];
             // populate map
             for (int i = 0; i < lines.Length; i++)
             {
@@ -85,70 +89,65 @@ namespace AdventOfCode2018
 
             Queue<Pos> spouts = new Queue<Pos>();
             spouts.Enqueue(new Pos(500, 0));
-
-            int fx = 0, fy = 0;
-
-            while(spouts.Count > 0)
+            skip:
+            while (spouts.Count > 0)
             {
                 Pos spout = spouts.Dequeue();
-                map[spout.x, spout.y] = '|';
+                if (map[spout.x, spout.y] == '~' || map[spout.x, spout.y] == '|')
+                    continue;
                 // fall phase
-                while (map[spout.x, spout.y + 1] != '#')
+                while (map[spout.x, spout.y] != '#')
                 {
-                    map[spout.x, spout.y + 1] = '|';
+                    map[spout.x, spout.y] = '|';
                     spout.y++;
-                    if (spout.y + 1> yMax)
-                    {
-                        fx = spout.x;
-                        fy = spout.y;
-                        goto end;
-                    }
+                    if (spout.y > yMax)
+                        goto skip;
                 }
                 // fill phase
-                //find left
-                int origX = spout.x;
                 bool spill = false;
-                do
+                int y = spout.y - 1;
+                while (!spill)
                 {
-                    spout.x = origX;
-                    map[spout.x, spout.y] = '~';
-                    while (map[spout.x - 1, spout.y] != '#' && (map[spout.x, spout.y + 1] != 0 && map[spout.x, spout.y + 1] != '|'))
+                    int x = spout.x;
+                    map[x, y] = '~';
+                    for (x = spout.x - 1;  map[x, y] != '#'; x--)
                     {
-                        map[spout.x - 1, spout.y] = '~';
-                        spout.x--;
-                    }
-                    if (map[spout.x, spout.y + 1] == 0)
-                    {
-                        spouts.Enqueue(new Pos(spout.x, spout.y + 1));
-                        spill = true;
-                    }
+                        if(map[x, y + 1] != 0)
+                        {
+                            map[x, y] = '~';
+                        }
+                        else
+                        {
+                            spouts.Enqueue(new Pos(x, y));
+                            spill = true;
+                            break;
+                        }
 
-                    // find right
-                    spout.x = origX;
-                    while (map[spout.x + 1, spout.y] != '#' && (map[spout.x, spout.y + 1] != 0 && map[spout.x, spout.y + 1] != '|'))
-                    {
-                        map[spout.x + 1, spout.y] = '~';
-                        spout.x++;
                     }
-                    if (map[spout.x, spout.y + 1] == 0)
+                    for (x = spout.x + 1;  map[x, y] != '#'; x++)
                     {
-                        spouts.Enqueue(new Pos(spout.x, spout.y + 1));
-                        spill = true;
+                        if(map[x, y + 1] != 0)
+                        {
+                            map[x, y] = '~';
+                        }
+                        else
+                        {
+                            spouts.Enqueue(new Pos(x, y));
+                            spill = true;
+                            break;
+                        }
+                        
                     }
-
-                    if (!spill)
-                        spout.y--;
-                    drawAround(spout.x, spout.y, map);
-                } while (!spill);
+                    y--;
+                }
             }
-            end:
             int count = 0;
-            for(int x = 0; x < xMax; x++)
+            for(int x = 0; x < xMax + 2; x++)
             {
-                for(int y = 0; y < yMax; y++)
+                for(int y = yMin; y <= yMax; y++)
                 {
                     char c = map[x, y];
-                    if (x == '|' | x == '~')
+                    if (c == '|' || c == '~')
                         count++;
                 }
             }
