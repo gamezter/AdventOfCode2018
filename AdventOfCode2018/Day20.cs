@@ -67,10 +67,13 @@ namespace AdventOfCode2018
 
         public static void part1()
         {
+            int w = 211;
+            int h = 205;
+
             string line = new StreamReader("day20.txt").ReadToEnd();
             Stack<pos> s = new Stack<pos>();
-            char[,] map = new char[300, 300];
-            int x = 150, y = 150;
+            char[,] map = new char[w, h];
+            int x = w / 2, y = h / 2;
             addWalls(x, y, map);
 
             for(int i = 1; i < line.Length - 1; i++)
@@ -112,15 +115,16 @@ namespace AdventOfCode2018
                 }
             }
 
-            //debug(map, 300, 300);
+            //debug(map, w, h);
 
-            int[,] distances = new int[300, 300];
-            for (int i = 0; i < 300; i++)
-                for (int j = 0; j < 300; j++)
+            int[,] distances = new int[w, h];
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
                     distances[i, j] = -1;
+            distances[w / 2, h / 2] = 0;
 
             Queue<pos> open = new Queue<pos>();
-            open.Enqueue(new pos(150, 150));
+            open.Enqueue(new pos(w / 2, h / 2));
             while(open.Count > 0)
             {
                 pos c = open.Dequeue();
@@ -169,18 +173,137 @@ namespace AdventOfCode2018
             }
 
             int max = 0;
-            for (int i = 0; i < 300; i++)
+            for (int i = 0; i < h; i++)
             {
-                for (int j = 0; j < 300; j++)
+                for (int j = 0; j < w; j++)
                 {
                     if (distances[j, i] > max)
                         max = distances[j, i];
                 }
             }
 
-            //debug2(distances, 300, 300);
-
             Console.WriteLine(max);
+            Console.Read();
+        }
+
+        public static void part2()
+        {
+            int w = 211;
+            int h = 205;
+
+            string line = new StreamReader("day20.txt").ReadToEnd();
+            Stack<pos> s = new Stack<pos>();
+            char[,] map = new char[w, h];
+            int x = w / 2, y = h / 2;
+            addWalls(x, y, map);
+
+            for (int i = 1; i < line.Length - 1; i++)
+            {
+                switch (line[i])
+                {
+                    case 'N':
+                        map[x, --y] = '-';
+                        map[x, --y] = '.';
+                        addWalls(x, y, map);
+                        break;
+                    case 'S':
+                        map[x, ++y] = '-';
+                        map[x, ++y] = '.';
+                        addWalls(x, y, map);
+                        break;
+                    case 'E':
+                        map[++x, y] = '|';
+                        map[++x, y] = '.';
+                        addWalls(x, y, map);
+                        break;
+                    case 'W':
+                        map[--x, y] = '|';
+                        map[--x, y] = '.';
+                        addWalls(x, y, map);
+                        break;
+                    case '(':
+                        s.Push(new pos(x, y));
+                        break;
+                    case ')':
+                        pos p = s.Pop();
+                        x = p.x;
+                        y = p.y;
+                        break;
+                    case '|':
+                        x = s.Peek().x;
+                        y = s.Peek().y;
+                        break;
+                }
+            }
+
+            //debug(map, w, h);
+
+            int[,] distances = new int[w, h];
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                    distances[i, j] = -1;
+            distances[w / 2, h / 2] = 0;
+
+            Queue<pos> open = new Queue<pos>();
+            open.Enqueue(new pos(w / 2, h / 2));
+            while (open.Count > 0)
+            {
+                pos c = open.Dequeue();
+                int nextVal = distances[c.x, c.y] + 1;
+                if (map[c.x + 1, c.y] == '|')
+                {
+                    int val = distances[c.x + 2, c.y];
+
+                    if (val == -1 || val > nextVal)
+                    {
+                        distances[c.x + 2, c.y] = nextVal;
+                        open.Enqueue(new pos(c.x + 2, c.y));
+                    }
+                }
+                if (map[c.x - 1, c.y] == '|')
+                {
+                    int val = distances[c.x - 2, c.y];
+
+                    if (val == -1 || val > nextVal)
+                    {
+                        distances[c.x - 2, c.y] = nextVal;
+                        open.Enqueue(new pos(c.x - 2, c.y));
+                    }
+                }
+
+                if (map[c.x, c.y + 1] == '-')
+                {
+                    int val = distances[c.x, c.y + 2];
+
+                    if (val == -1 || val > nextVal)
+                    {
+                        distances[c.x, c.y + 2] = nextVal;
+                        open.Enqueue(new pos(c.x, c.y + 2));
+                    }
+                }
+                if (map[c.x, c.y - 1] == '-')
+                {
+                    int val = distances[c.x, c.y - 2];
+
+                    if (val == -1 || val > nextVal)
+                    {
+                        distances[c.x, c.y - 2] = nextVal;
+                        open.Enqueue(new pos(c.x, c.y - 2));
+                    }
+                }
+            }
+
+            int count = 0;
+            for (int i = 0; i < h; i++)
+            {
+                for (int j = 0; j < w; j++)
+                {
+                    if (distances[j, i] >= 1000)
+                        count++;
+                }
+            }
+
+            Console.WriteLine(count);
             Console.Read();
         }
     }
