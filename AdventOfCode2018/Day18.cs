@@ -1,10 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace AdventOfCode2018
 {
     class Day18
     {
+        public static int GetHash(char[][] map)
+        {
+            int hash = 0;
+            for(int x = 1; x < 51; x++)
+            {
+                for(int y = 1; y < 51; y++)
+                {
+                    char c = map[x][y];
+                    int val = c == '|' ? 1 : c == '#' ? 2 : 0;
+                    hash += c * 10 * x + y;
+                }
+            }
+            return hash;
+        }
+
         public static int[,] offsets = 
         {
             {-1,-1 },
@@ -98,6 +114,8 @@ namespace AdventOfCode2018
         public static void part2()
         {
             string[] lines = new StreamReader("day18.txt").ReadToEnd().Trim().Split('\n');
+            Dictionary<int, int> met = new Dictionary<int, int>();
+            bool guard = false;
 
             char[][] state = new char[52][];
             state[0] = new char[52];
@@ -147,14 +165,25 @@ namespace AdventOfCode2018
                         }
                     }
                 }
-                
-                Console.CursorLeft = 0;
-                Console.CursorTop = 0;
-                for (int y = 0; y < 52; y++)
+
+                if (!guard)
                 {
-                    Console.WriteLine(new string(nextState[y]));
+                    int hash = GetHash(nextState);
+
+                    if (met.ContainsKey(hash))
+                    {
+                        int lastMet = met[hash];
+                        int d = i - lastMet;
+                        while (i < 1000000000)
+                            i += d;
+                        i -= d;
+                        guard = true;
+                    }
+                    else
+                    {
+                        met[hash] = i;
+                    }
                 }
-                Console.Read();
                 state = nextState;
             }
 
