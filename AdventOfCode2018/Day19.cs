@@ -88,5 +88,20 @@ namespace AdventOfCode2018
             Console.WriteLine(reg[0]);
             Console.Read();
         }
+
+        public static void part2()
+        {
+            int sumFactors = 0;
+            int r2 = 10551430;
+
+            for(int i = 1; i <= r2; i++)
+            {
+                if (r2 % i == 0)
+                    sumFactors += i;
+            }
+
+            Console.WriteLine(sumFactors);
+            Console.Read();
+        }
     }
 }
