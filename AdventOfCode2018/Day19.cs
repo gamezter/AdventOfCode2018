@@ -8,15 +8,6 @@ namespace AdventOfCode2018
         public static void part1()
         {
             string[] lines = new StreamReader("day19.txt").ReadToEnd().Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            /*string[] lines = {
-                "#ip 0",
-                "seti 5 0 1",
-                "seti 6 0 2",
-                "addi 0 1 0",
-                "addr 1 2 3",
-                "setr 1 0 0",
-                "seti 8 0 4",
-                "seti 9 0 5" };*/
             int ipr = int.Parse(lines[0].Split()[1]);
             int ip = 0;
             int[] reg = new int[6];
@@ -92,11 +83,11 @@ namespace AdventOfCode2018
         public static void part2()
         {
             int sumFactors = 0;
-            int r2 = 10551430;
+            int n = 10551430;
 
-            for(int i = 1; i <= r2; i++)
+            for(int i = 1; i <= n; i++)
             {
-                if (r2 % i == 0)
+                if (n % i == 0)
                     sumFactors += i;
             }
 
