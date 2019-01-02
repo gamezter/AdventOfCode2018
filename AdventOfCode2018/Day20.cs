@@ -52,6 +52,18 @@ namespace AdventOfCode2018
                 Console.WriteLine();
             }
         }
+        public static void debug2(int[,] map, int w, int h)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    if (map[x, y] != -1)
+                        Console.Write(map[x, y] + " ");
+                }
+                Console.WriteLine();
+            }
+        }
 
         public static void part1()
         {
@@ -161,10 +173,12 @@ namespace AdventOfCode2018
             {
                 for (int j = 0; j < 300; j++)
                 {
-                    if (map[j, i] > max)
-                        max = map[j, i];
+                    if (distances[j, i] > max)
+                        max = distances[j, i];
                 }
             }
+
+            //debug2(distances, 300, 300);
 
             Console.WriteLine(max);
             Console.Read();
