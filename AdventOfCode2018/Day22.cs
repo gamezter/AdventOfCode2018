@@ -17,8 +17,8 @@ namespace AdventOfCode2018
         new[]
         {
             new []{ -1, 0 },
-            new []{ 1, 0 },
             new []{ 0, -1 },
+            new []{ 1, 0 },
             new []{ 0, 1 }
         };
 
@@ -56,9 +56,9 @@ namespace AdventOfCode2018
         {
             public int x;
             public int y;
-            
             public tool t;
             public int time;
+
             public pos(int x, int y, tool t, int time)
             {
                 this.x = x;
@@ -114,11 +114,11 @@ namespace AdventOfCode2018
                         case tool.NOTHING:
                             if (t == type.ROCKY)
                             {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 7)
+                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
                                 {
-                                    times[nx, ny] = p.time + 7;
-                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 7));
-                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 7));
+                                    times[nx, ny] = p.time + 8;
+                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 8));
+                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 8));
                                 }
                             }
                             else
@@ -134,11 +134,11 @@ namespace AdventOfCode2018
                         case tool.TORCH:
                             if (t == type.WET)
                             {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 7)
+                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
                                 {
-                                    times[nx, ny] = p.time + 7;
-                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 7));
-                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 7));
+                                    times[nx, ny] = p.time + 8;
+                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 8));
+                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 8));
                                 }
                             }
                             else
@@ -153,11 +153,11 @@ namespace AdventOfCode2018
                         case tool.CLIMBINGGEAR:
                             if (t == type.NARROW)
                             {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 7)
+                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
                                 {
-                                    times[nx, ny] = p.time + 7;
-                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 7));
-                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 7));
+                                    times[nx, ny] = p.time + 8;
+                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 8));
+                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 8));
                                 }
                             }
                             else
