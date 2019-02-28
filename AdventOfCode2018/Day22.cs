@@ -73,6 +73,7 @@ namespace AdventOfCode2018
             int sizeY = targetY * 2;
             
             int[,] map = new int[sizeX, sizeY];
+            int[,] times = new int[sizeX, sizeY];
 
             for (int x = 0; x < sizeX; x++)
             {
@@ -89,19 +90,20 @@ namespace AdventOfCode2018
                         geoIndex = map[x - 1, y] * map[x, y - 1];
 
                     map[x, y] = (geoIndex + depth) % 20183;
+                    times[x, y] = int.MaxValue;
                 }
             }
 
             Queue<pos> open = new Queue<pos>();
             open.Enqueue(new pos(0, 0, 1, 0));
-
-            int[,] times = new int[sizeX, sizeY];
+            times[0, 0] = 0;
 
             int min = int.MaxValue;
 
             while (open.Count != 0)
             {
                 pos p = open.Dequeue();
+
                 if(p.x == targetX && p.y == targetY)
                 {
                     int nTime = p.tool == 1 ? p.time : p.time + 7;
@@ -121,7 +123,7 @@ namespace AdventOfCode2018
 
                     if (p.tool == map[nx, ny] % 3)
                     {
-                        if (time == 0 || time > p.time + 7)
+                        if (time > p.time + 7)
                         {
                             times[nx, ny] = p.time + 8;
                             open.Enqueue(new pos(nx, ny, (p.tool + 1) % 3, p.time + 8));
@@ -130,7 +132,7 @@ namespace AdventOfCode2018
                     }
                     else
                     {
-                        if (time == 0 || time > p.time)
+                        if (time > p.time)
                         {
                             times[nx, ny] = p.time + 1;
                             open.Enqueue(new pos(nx, ny, p.tool, p.time + 1));
