@@ -26,12 +26,14 @@ namespace AdventOfCode2018
         {
             int[,] map = new int[targetX + 1, targetY + 1];
             int total = 0;
+
+
             for (int x = 0; x <= targetX; x++)
             {
                 for(int y = 0; y <= targetY; y++)
                 {
                     int geoIndex;
-                    if (x == 0 && y == 0)
+                    if (x == 0 && y == 0 || x == targetX && y == targetY)
                         geoIndex = 0;
                     else if (y == 0)
                         geoIndex = x * 16807;
@@ -49,36 +51,35 @@ namespace AdventOfCode2018
             Console.Read();
         }
 
-        public enum tool { NOTHING, TORCH, CLIMBINGGEAR };
-        public enum type { ROCKY = 0, WET = 1, NARROW = 2};
-
         struct pos
         {
             public int x;
             public int y;
-            public tool t;
+            public int tool;
             public int time;
 
-            public pos(int x, int y, tool t, int time)
+            public pos(int x, int y, int t, int time)
             {
                 this.x = x;
                 this.y = y;
-                this.t = t;
+                this.tool = t;
                 this.time = time;
             }
         }
 
         public static void part2()
         {
-            int[,] map = new int[targetX + 1, targetY + 1];
-            type[,] mapType = new type[targetX + 1, targetY + 1];
+            int sizeX = targetX * 2;
+            int sizeY = targetY * 2;
+            
+            int[,] map = new int[sizeX, sizeY];
 
-            for (int x = 0; x <= targetX; x++)
+            for (int x = 0; x < sizeX; x++)
             {
-                for (int y = 0; y <= targetY; y++)
+                for (int y = 0; y < sizeY; y++)
                 {
                     int geoIndex;
-                    if (x == 0 && y == 0)
+                    if (x == 0 && y == 0 || x == targetX && y == targetY)
                         geoIndex = 0;
                     else if (y == 0)
                         geoIndex = x * 16807;
@@ -87,93 +88,58 @@ namespace AdventOfCode2018
                     else
                         geoIndex = map[x - 1, y] * map[x, y - 1];
 
-                    int erosionLevel = (geoIndex + depth) % 20183;
-                    map[x, y] = erosionLevel;
-                    mapType[x, y] = (type)(erosionLevel % 3);
+                    map[x, y] = (geoIndex + depth) % 20183;
                 }
             }
 
             Queue<pos> open = new Queue<pos>();
-            open.Enqueue(new pos(0, 0, tool.TORCH, 0));
+            open.Enqueue(new pos(0, 0, 1, 0));
 
-            int[,] times = new int[targetX + 1, targetY + 1];
+            int[,] times = new int[sizeX, sizeY];
+
+            int min = int.MaxValue;
 
             while (open.Count != 0)
             {
                 pos p = open.Dequeue();
+                if(p.x == targetX && p.y == targetY)
+                {
+                    int nTime = p.tool == 1 ? p.time : p.time + 7;
+                    if (min > nTime)
+                        min = nTime;
+                    continue;
+                }
+
                 for(int i = 0; i < 4; i++)
                 {
                     int nx = p.x + deltas[i][0];
                     int ny = p.y + deltas[i][1];
-                    if (nx == -1 || nx == targetX + 1 || ny == -1 || ny == targetY + 1)
+                    if (nx == -1 || nx == sizeX || ny == -1 || ny == sizeY)
                         continue;
 
-                    type t = mapType[nx, ny];
-                    switch (p.t)
-                    {
-                        case tool.NOTHING:
-                            if (t == type.ROCKY)
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
-                                {
-                                    times[nx, ny] = p.time + 8;
-                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 8));
-                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 8));
-                                }
-                            }
-                            else
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 1)
-                                {
-                                    times[nx, ny] = p.time + 1;
-                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 1));
-                                }
-                            }
+                    float time = times[nx, ny];
 
-                            break;
-                        case tool.TORCH:
-                            if (t == type.WET)
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
-                                {
-                                    times[nx, ny] = p.time + 8;
-                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 8));
-                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 8));
-                                }
-                            }
-                            else
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 1)
-                                {
-                                    times[nx, ny] = p.time + 1;
-                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 1));
-                                }
-                            }
-                            break;
-                        case tool.CLIMBINGGEAR:
-                            if (t == type.NARROW)
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 8)
-                                {
-                                    times[nx, ny] = p.time + 8;
-                                    open.Enqueue(new pos(nx, ny, tool.NOTHING, p.time + 8));
-                                    open.Enqueue(new pos(nx, ny, tool.TORCH, p.time + 8));
-                                }
-                            }
-                            else
-                            {
-                                if (times[nx, ny] == 0 || times[nx, ny] > p.time + 1)
-                                {
-                                    times[nx, ny] = p.time + 1;
-                                    open.Enqueue(new pos(nx, ny, tool.CLIMBINGGEAR, p.time + 1));
-                                }
-                            }
-                            break;
+                    if (p.tool == map[nx, ny] % 3)
+                    {
+                        if (time == 0 || time > p.time + 7)
+                        {
+                            times[nx, ny] = p.time + 8;
+                            open.Enqueue(new pos(nx, ny, (p.tool + 1) % 3, p.time + 8));
+                            open.Enqueue(new pos(nx, ny, (p.tool + 2) % 3, p.time + 8));
+                        }
+                    }
+                    else
+                    {
+                        if (time == 0 || time > p.time)
+                        {
+                            times[nx, ny] = p.time + 1;
+                            open.Enqueue(new pos(nx, ny, p.tool, p.time + 1));
+                        }
                     }
                 }
             }
 
-            Console.Write(times[targetX, targetY]);
+            Console.Write(min);
             Console.Read();
         }
     }
