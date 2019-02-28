@@ -104,6 +104,9 @@ namespace AdventOfCode2018
             {
                 pos p = open.Dequeue();
 
+                if (p.time > times[p.x, p.y])
+                    continue;
+
                 if(p.x == targetX && p.y == targetY)
                 {
                     int nTime = p.tool == 1 ? p.time : p.time + 7;
